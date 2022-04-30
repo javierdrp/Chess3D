@@ -90,8 +90,6 @@ public class Board3D {
         game.stream().map(ChessPiece3D::getMesh).forEach(Global.meshBuffer::addMesh);
         //Global.meshBuffer.addMesh(Util.readMeshFromObjFile("models/board/frame.obj", new Color(0x5B493B)));
 
-        System.out.println(game.size());
-        System.out.println(dead.size());
     }
 
     private static ChessPiece3D getPiece(char c) {

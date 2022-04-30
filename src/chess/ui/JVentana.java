@@ -55,9 +55,6 @@ public class JVentana extends JFrame {
 
         this.add(pnlBoard,BorderLayout.CENTER);
         this.add(pnlNorte,BorderLayout.NORTH);
-        //Este método siempre debe ser el último mensaje
-
-        //board.loadGame("r3k2r/pp1n2pp/2p2q2/b2p1n2/BP1Pp3/P1N2P2/2PB2PP/R2Q1RK1");
         board.repaint();
         System.out.println(board);
         //board.setSize(400,400);
@@ -77,7 +74,6 @@ public class JVentana extends JFrame {
         btnNewGame = new JButton("Nueva Partida");
         pnlNorte = new JPanel(new FlowLayout());
         pnlNorte.add(btnNewGame);
-
     }
 
 

@@ -12,6 +12,9 @@ public class Pawn extends Pieza{
 
     @Override
     public ArrayList<Tile> getMoves() {
+        // Multiplicar lista por -1 si son blancos
+        // Que cuando comen se mentengan en el mismo color
+
         ArrayList<Integer> relativeMoves = new ArrayList<Integer>();
         ArrayList<Tile> moves = new ArrayList<Tile>();
         if (hasMoved)

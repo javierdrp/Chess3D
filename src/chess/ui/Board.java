@@ -9,7 +9,12 @@ import java.awt.event.MouseMotionListener;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Timer;
 import javax.swing.JPanel;
+
+import chess.util.CountdownTimerThread;
+import chess.util.GameReader;
 import data.Data;
 
 public class Board extends JPanel implements MouseMotionListener,MouseListener {
@@ -20,7 +25,8 @@ public class Board extends JPanel implements MouseMotionListener,MouseListener {
     private int nuevaY;
     private boolean selected;
     private ColorEnum turn;
-
+    public static CountdownTimerThread whiteTimer;
+    public static CountdownTimerThread blackTimer;
     public Board() {
         this.setSize(400,400);
         this.addMouseListener(this);
@@ -32,8 +38,11 @@ public class Board extends JPanel implements MouseMotionListener,MouseListener {
         initBoard();
         loadGame("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
         repaint();
-
-
+        whiteTimer = new CountdownTimerThread(300,Data.whiteTime,this);
+        blackTimer = new CountdownTimerThread(300,Data.whiteTime,this);
+        whiteTimer.start();
+        blackTimer.start();
+        blackTimer.suspend();
     }
 
     public void addPieza(Pieza pieza)
@@ -69,10 +78,27 @@ public class Board extends JPanel implements MouseMotionListener,MouseListener {
             white = !white;
     }
     }
-
-    private void turnSwap()
+    public  void updateTime()
     {
+        Data.whiteTime = whiteTimer.toString();
+        Data.blackTime = blackTimer.toString();
+    }
+
+
+    private void turnSwap(){
         turn = ColorEnum.BLACK.changeColor(turn);
+        try {
+            if (turn == ColorEnum.WHITE) {
+                whiteTimer.resume();
+                blackTimer.suspend();
+            }else{
+                blackTimer.resume();
+                whiteTimer.suspend();
+            }
+        }catch (Exception e)
+        {
+
+        }
     }
 
     public Tile[] getBoard() {
@@ -94,8 +120,6 @@ public class Board extends JPanel implements MouseMotionListener,MouseListener {
             tile.paintComponent(g);
 
         }
-
-
         if(piezaActual != null){
             piezaActual.setX(nuevaX);
             piezaActual.setY(nuevaY);
@@ -120,16 +144,18 @@ public class Board extends JPanel implements MouseMotionListener,MouseListener {
                 restore();
                 tile.setShade(Color.ORANGE);
                 selected = true;
-            }
-            else if (selected == true && piezaActual.getColor() == turn){
-                 if (piezaActual.move(tile))
+                for(Tile tiles:piezaActual.getMoves())
                 {
+                    tiles.setShade(Color.red);
+                }
+            }
+            else if (selected == true && piezaActual.getColor() == turn && piezaActual.getLegalMoves().contains(tile)){
+                 if (piezaActual.move(tile))
                     turnSwap();
                     Data.selected = -1;
                     selected = false;
                     Data.available = new ArrayList<Integer>();
                     restore();
-                }
             }
             repaint();
             Data.game=toString();
@@ -149,6 +175,11 @@ public class Board extends JPanel implements MouseMotionListener,MouseListener {
     public void mouseClicked(MouseEvent e) {
         Tile tile = (Tile) this.getComponentAt(new Point(e.getX(),e.getY()));
         selectTile(tile.getPosition());
+        if(tile.isOccupied())
+        {
+            for(Tile a:tile.getPieza().getLegalMoves())
+                a.setShade(Color.PINK);
+        }
         repaint();
 
     }
@@ -198,15 +229,12 @@ public class Board extends JPanel implements MouseMotionListener,MouseListener {
 
     }
 
-    public Collection getAllMoves(ColorEnum color){
+    public List<Tile> getAllMoves(ColorEnum color){
         ArrayList<Tile> posibles = new ArrayList<Tile>();
-        //System.out.println(getPiezas());
         for(Pieza pieza:piezas){
-          if (pieza.getColor() == color && !(pieza instanceof King))
+          if (pieza.getColor() == color)
                  posibles.addAll(pieza.getMoves());
-                //System.out.println(pieza);
         }
-        //System.out.println(posibles);
 
        return posibles;
     }
@@ -214,28 +242,7 @@ public class Board extends JPanel implements MouseMotionListener,MouseListener {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0;i<8;i++){
-            int counter = 0;
-            for(int j=0;j<8;j++){
-                if (board[8*i+j].isOccupied())
-                {
-                    if(counter!=0){
-                        sb.append(counter);
-                        counter = 0;
-                    }
-                    sb.append(board[8*i+j].getPieza().toString());
-                }
-                else{
-                    counter++;
-                }
-            }
-            if(counter!=0)
-                sb.append(counter);
-            counter = 0;
-            sb.append("/");
-        }
-        return sb.toString();
+        return GameReader.boardToFEN(this);
     }
 
     @Override
@@ -245,64 +252,6 @@ public class Board extends JPanel implements MouseMotionListener,MouseListener {
 
     public void loadGame(String tablero)
     {
-
-        /* Utilizamos la nomenclatura FEN para cargar y guardar partidas */
-        int letra=-1;
-        String[] lineas = tablero.split("/");
-        Pieza pieza;
-        for(int i= 0;i<8;i++)
-        {
-            String linea = lineas[i];
-
-            for(int j=0;j<8;j++)
-            {
-                char caracter;
-                letra++;
-
-                if(letra >= linea.length())
-                    caracter = '/';
-                else
-                    caracter = linea.charAt(letra);
-
-                pieza = null;
-                int num = i*8+j;
-                switch (caracter)
-                {
-
-                    case 'p': pieza = new Pawn(ColorEnum.BLACK,board[num]); break;
-                    case 'r': pieza = new Rook(ColorEnum.BLACK,board[num]); break;
-                    case 'n': pieza = new Knight(ColorEnum.BLACK,board[num]); break;
-                    case 'b': pieza = new Bishop(ColorEnum.BLACK,board[num]); break;
-                    case 'q': pieza = new Queen(ColorEnum.BLACK,board[num]); break;
-                    case 'k': pieza = new King(ColorEnum.BLACK,board[num]); break;
-                    case 'P': pieza = new Pawn(ColorEnum.WHITE,board[num]); break;
-                    case 'R': pieza = new Rook(ColorEnum.WHITE,board[num]); break;
-                    case 'N': pieza = new Knight(ColorEnum.WHITE,board[num]); break;
-                    case 'B': pieza = new Bishop(ColorEnum.WHITE,board[num]); break;
-                    case 'Q': pieza = new Queen(ColorEnum.WHITE,board[num]); break;
-                    case 'K': pieza = new King(ColorEnum.WHITE,board[num]); break;
-                    case '/': j=8; break;
-                    case '1': break;
-                    case '2': j++; break;
-                    case '3': j+=2; break;
-                    case '4': j+=3; break;
-                    case '5': j+=4; break;
-                    case '6': j+=5; break;
-                    case '7': j+=6; break;
-                    case '8': j+=7; break;
-                    default:
-                        System.out.println("ERROR");
-                }
-                if(pieza!=null)
-                {
-                    //System.out.println(linea.charAt(letra));
-                    board[num].setPieza(pieza);
-                    pieza.setBoard(this);
-                }
-                //System.out.println(j);
-
-            }
-            letra =-1;
-        }
+        GameReader.readFEN(this,tablero);
     }
 }

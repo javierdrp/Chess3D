@@ -88,10 +88,7 @@ public class Tile extends JPanel
     }
     @Override
     public String toString() {
-        return "Tile{" +
-                "position= " + position +
-                " Occupied= " + isOccupied +
-                '}';
+        return getColumn() + Integer.toString(8-position/8);
     }
 
     @Override
@@ -100,6 +97,26 @@ public class Tile extends JPanel
         if (o == null || getClass() != o.getClass()) return false;
         Tile tile = (Tile) o;
         return position == tile.position;
+    }
+
+    public String getColumn()
+    {
+        int coordinate = position % 8;
+        char position = 'z';
+        switch(coordinate)
+        {
+            case(0): position = 'a'; break;
+            case(1): position = 'b'; break;
+            case(2): position = 'c'; break;
+            case(3): position = 'd'; break;
+            case(4): position = 'e'; break;
+            case(5): position = 'f'; break;
+            case(6): position = 'g'; break;
+            case(7): position = 'h'; break;
+            default: System.out.println("ERROR");
+
+        }
+        return Character.toString(position);
     }
 
 }

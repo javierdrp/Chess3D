@@ -29,4 +29,5 @@ public class Tile3D extends Clickable {
         else if(Data.available.contains(pos)) mesh.setBaseColor(Tile3D.AVAILABLE);
         else mesh.setBaseColor(color);
     }
+
 }

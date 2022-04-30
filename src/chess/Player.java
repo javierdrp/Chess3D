@@ -38,4 +38,5 @@ public class Player {
     public boolean isTurn() {
         return isTurn;
     }
+
 }

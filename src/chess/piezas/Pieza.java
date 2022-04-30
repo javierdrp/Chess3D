@@ -3,6 +3,7 @@ package chess.piezas;
 import chess.ui.Board;
 import chess.ui.ColorEnum;
 import chess.ui.Tile;
+import chess.util.CheckDetector;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -40,7 +41,7 @@ public abstract class Pieza
         String imgFile = getImage();
         try{
             if (this.img == null) {
-                this.img = ImageIO.read(getClass().getResource(imgFile));
+                this.img = ImageIO.read(getClass().getResource("resources/" + imgFile));
             }
             } catch(IOException e){
                 System.out.println("File not found");
@@ -62,7 +63,6 @@ public abstract class Pieza
     public void draw(Graphics g)
     {
         g.drawImage(this.img,x+15,y+15,null);
-        //System.out.println("x: "+x+" y: " +y);
     }
 
     public void setHasMoved(boolean hasMoved) {
@@ -76,63 +76,61 @@ public abstract class Pieza
     public void setTile(Tile tile) {
         this.tile = tile;
     }
-
     public ColorEnum getColor() {
         return color;
     }
     public abstract ArrayList<Tile> getMoves();
     public abstract String getImage();
 
-    public boolean move(Tile tile)
+
+    public ArrayList<Tile> getLegalMoves()
     {
 
-        boolean moved = false;
-        if (getMoves().contains(tile))
+        ArrayList<Tile> legalMoves = new ArrayList<Tile>();
+        ArrayList<Tile> moves = getMoves();
+        for(Tile newTile:moves)
         {
-            Tile oldTile = this.tile;
+            Tile oldTile = tile;
             oldTile.setPieza(null);
             oldTile.setOccupied(false);
-            setTile(tile);
-            this.tile.setPieza(this);
-            ColorEnum oppositeColor = ColorEnum.BLACK.changeColor(color);
-            Collection<Tile> moves = board.getAllMoves(oppositeColor);
-            ArrayList<Pieza> atacadas = new ArrayList<Pieza>();
-            moves.stream()
-                    .filter(e-> (e.isOccupied()))
-                    .forEach(e->atacadas.add(e.getPieza()));
-            // El contains falla
-            for (Pieza p: atacadas)
+            Pieza oldPieza = newTile.getPieza();
+            move(newTile);
+            if(!CheckDetector.detectCheck(board,ColorEnum.BLACK.changeColor(color)))
             {
-                if(p instanceof King)
-                    moved = true;
+                legalMoves.add(newTile);
             }
-            if(!moved)
-            {
-                this.tile.setPieza(this);
-                this.tile.setOccupied(true);
-                oldTile.setOccupied(false);
-                setHasMoved(true);
-            }else{
-                tile.setOccupied(false);
-                tile.setPieza(null);
-                oldTile.setPieza(this);
-                oldTile.setOccupied(true);
-                setTile(oldTile);
+            tile.setPieza(null);
+            tile.setOccupied(false);
+            setTile(oldTile);
+            oldTile.setPieza(this);
+            if(oldPieza != null) {
+                oldPieza.setTile(newTile);
+                newTile.setPieza(oldPieza);
+                board.getPiezas().add(oldPieza);
             }
-
-
-
 
         }
-        restore();
-        board.repaint();
-        return !moved;
+            return legalMoves;
+        }
+
+    public boolean move(Tile newTile)
+    {
+        if(newTile.isOccupied())
+            board.getPiezas().remove(newTile.getPieza());
+        tile.setOccupied(false);
+        setTile(newTile);
+        newTile.setPieza(this);
+        newTile.setOccupied(true);
+        return true;
+        //Una funcion de pieza que esea getLegalMoves
+
+
     }
 
     public List<Integer> getTileNum()
     {
         List<Integer> moves = new ArrayList<Integer>();
-        for(Tile tile:getMoves())
+        for(Tile tile:getLegalMoves())
             moves.add(tile.getPosition());
 
         return moves;
@@ -291,7 +289,7 @@ public abstract class Pieza
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Pieza pieza = (Pieza) o;
-        return pieza.toString().equals(toString());
+        return pieza.toString().equals(toString()) && pieza.getTile().getPosition() == tile.getPosition();
     }
 
 }
