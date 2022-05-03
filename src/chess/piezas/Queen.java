@@ -1,12 +1,9 @@
 package chess.piezas;
 
-import chess.ui.ColorEnum;
+import chess.util.ColorEnum;
 import chess.ui.Tile;
-import java.util.List;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Queen extends Pieza{
     @Override
@@ -31,6 +28,7 @@ public class Queen extends Pieza{
     {
         super(pawn.getColor(),pawn.getTile());
         setBoard(pawn.getBoard());
+        board.refreshPiezas();
     }
 
     @Override

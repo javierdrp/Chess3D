@@ -1,7 +1,7 @@
 package chess.piezas;
 
 import chess.ui.Board;
-import chess.ui.ColorEnum;
+import chess.util.ColorEnum;
 import chess.ui.Tile;
 import chess.util.CheckDetector;
 
@@ -15,9 +15,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-
-
-import java.util.*;
 
 public abstract class Pieza
 {
@@ -113,7 +110,11 @@ public abstract class Pieza
             return legalMoves;
         }
 
-    public boolean move(Tile newTile)
+        public  boolean move(Tile newTile)
+        {
+            return move(newTile,false);
+        }
+    public boolean move(Tile newTile,boolean cond)
     {
         if(newTile.isOccupied())
             board.getPiezas().remove(newTile.getPieza());
@@ -122,9 +123,6 @@ public abstract class Pieza
         newTile.setPieza(this);
         newTile.setOccupied(true);
         return true;
-        //Una funcion de pieza que esea getLegalMoves
-
-
     }
 
     public List<Integer> getTileNum()
@@ -189,9 +187,9 @@ public abstract class Pieza
         if (newPosition == position)
         {
             // No se puede comer a piezas de su mismo color
-            boolean ret = !board[position].isOccupied() || !(board[position].getPieza().getColor() ==
+            return  !board[position].isOccupied() || !(board[position].getPieza().getColor() ==
                     board[original].getPieza().getColor());
-            return ret;
+
         }
 
         // Moverse A la izquierda

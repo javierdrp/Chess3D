@@ -2,7 +2,6 @@ package chess.util;
 
 import chess.piezas.*;
 import chess.ui.Board;
-import chess.ui.ColorEnum;
 import chess.ui.Tile;
 
 import static java.lang.Character.isLowerCase;
@@ -16,6 +15,10 @@ public abstract class GameReader {
     public static void readFEN(Board boards, String tablero)
     {
         Tile[] board = boards.getBoard();
+        for(Tile tile:board)
+        {
+            tile.setPieza(null);
+        }
             int letra=-1;
             String[] lineas = tablero.split("/");
             Pieza pieza;
@@ -70,6 +73,7 @@ public abstract class GameReader {
                 }
                 letra =-1;
             }
+            boards.refreshPiezas();
         }
 
         public static String boardToFEN(Board boards)

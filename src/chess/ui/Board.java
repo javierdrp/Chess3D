@@ -8,11 +8,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Timer;
 import javax.swing.JPanel;
 
+import chess.util.ColorEnum;
 import chess.util.CountdownTimerThread;
 import chess.util.GameReader;
 import data.Data;
@@ -150,8 +149,9 @@ public class Board extends JPanel implements MouseMotionListener,MouseListener {
                 }
             }
             else if (selected == true && piezaActual.getColor() == turn && piezaActual.getLegalMoves().contains(tile)){
-                 if (piezaActual.move(tile))
+                 if (piezaActual.move(tile,true))
                     turnSwap();
+                    piezaActual.setHasMoved(true);
                     Data.selected = -1;
                     selected = false;
                     Data.available = new ArrayList<Integer>();
@@ -169,6 +169,15 @@ public class Board extends JPanel implements MouseMotionListener,MouseListener {
      /*   nuevaX = e.getX()-30;
         nuevaY = e.getY()-30;
         repaint();*/
+    }
+
+    public void refreshPiezas(){
+        piezas = new ArrayList<Pieza>();
+        for(Tile tile:board)
+        {
+            if(tile.isOccupied())
+                piezas.add(tile.getPieza());
+        }
     }
 
     @Override
