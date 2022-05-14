@@ -11,8 +11,8 @@ public class Tile3D extends Clickable {
 
     public static final Color WHITE = new Color(0xFFFFFF);
     public static final Color BLACK = new Color(0x156900);
-    public static final Color SELECTED = new Color(0xD8F7FF00);
-    public static final Color AVAILABLE = new Color(0x75FF3C);
+    public static final Color AVAILABLE = new Color(0xD8F7FF00);
+    public static final Color SELECTED = new Color(0x75FF3C);
 
     public Mesh3D mesh;
 

@@ -11,9 +11,13 @@ import rendering.model.piece.Rook3D;
 import rendering.util.Util;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +25,7 @@ public class Board3D {
 
     private static Tile3D[] tiles = new Tile3D[64];
 
-    private static ChessPiece3D[] allPieces;
+    private static List<ChessPiece3D> allPieces;
 
     public static final String newGame = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
@@ -32,13 +36,14 @@ public class Board3D {
 
     public static void prepare() {
         resetUsed();
-        allPieces = new ChessPiece3D[]{
+        allPieces = new ArrayList<>();
+        Collections.addAll(allPieces,
                 new Rook3D(ChessPiece3D.BLACK), new Knight3D(ChessPiece3D.BLACK), new Bishop3D(ChessPiece3D.BLACK), new Queen3D(ChessPiece3D.BLACK), new King3D(ChessPiece3D.BLACK), new Bishop3D(ChessPiece3D.BLACK), new Knight3D(ChessPiece3D.BLACK), new Rook3D(ChessPiece3D.BLACK),
                 new Pawn3D(ChessPiece3D.BLACK), new Pawn3D(ChessPiece3D.BLACK), new Pawn3D(ChessPiece3D.BLACK), new Pawn3D(ChessPiece3D.BLACK), new Pawn3D(ChessPiece3D.BLACK), new Pawn3D(ChessPiece3D.BLACK), new Pawn3D(ChessPiece3D.BLACK), new Pawn3D(ChessPiece3D.BLACK),
 
                 new Pawn3D(ChessPiece3D.WHITE), new Pawn3D(ChessPiece3D.WHITE), new Pawn3D(ChessPiece3D.WHITE), new Pawn3D(ChessPiece3D.WHITE), new Pawn3D(ChessPiece3D.WHITE), new Pawn3D(ChessPiece3D.WHITE), new Pawn3D(ChessPiece3D.WHITE), new Pawn3D(ChessPiece3D.WHITE),
                 new Rook3D(ChessPiece3D.WHITE), new Knight3D(ChessPiece3D.WHITE), new Bishop3D(ChessPiece3D.WHITE), new Queen3D(ChessPiece3D.WHITE), new King3D(ChessPiece3D.WHITE), new Bishop3D(ChessPiece3D.WHITE), new Knight3D(ChessPiece3D.WHITE), new Rook3D(ChessPiece3D.WHITE)
-        };
+        );
 
         Mesh3D[] meshes = new Mesh3D[64];
         for(int i = 0; i < 8; i++)
@@ -54,7 +59,7 @@ public class Board3D {
     public static void loadGame(String s) {
         dead = new HashSet<>(32);
         game = new HashSet<>(32);
-        dead.addAll(Arrays.asList(allPieces));
+        dead.addAll(allPieces);
 
         int pos = 0;
         resetUsed();
@@ -112,6 +117,18 @@ public class Board3D {
     public static Integer use(String piece) {
         used.replace(piece, used.get(piece) + 1);
         return used.get(piece) - 1;
+    }
+
+    public static void addPiece(String fen) {
+        Color color = Character.isUpperCase(fen.charAt(0))?ChessPiece3D.WHITE:ChessPiece3D.BLACK;
+        switch (fen.toUpperCase(Locale.ROOT)) {
+            case "R" -> allPieces.add(new Rook3D(color));
+            case "K" -> allPieces.add(new King3D(color));
+            case "B" -> allPieces.add(new Bishop3D(color));
+            case "Q" -> allPieces.add(new Queen3D(color));
+            case "N" -> allPieces.add(new Knight3D(color));
+            case "P" -> allPieces.add(new Pawn3D(color));
+        }
     }
 
 }

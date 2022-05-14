@@ -11,16 +11,12 @@ public class ChessPiece3D extends Clickable {
 
     public static final Color WHITE = new Color(218, 203, 158);
     public static final Color BLACK = new Color(100, 69, 69);
-    public static final Color AVAILABLE = new Color(133, 255, 105);
-    public static final Color SELECTED = new Color(0xD8F7FF00);
+    public static final Color SELECTED = new Color(133, 255, 105);
+    public static final Color AVAILABLE = new Color(0xD8F7FF00);
 
     private Mesh3D mesh;
 
     public String name;
-
-    public ChessPiece3D(String name) {
-        this.name = name;
-    }
 
     public ChessPiece3D(String name, Color color, Mesh3D mesh) {
         this.name = (color.equals(ChessPiece3D.WHITE))?name.toUpperCase():name.toLowerCase();

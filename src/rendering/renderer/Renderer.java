@@ -37,9 +37,9 @@ public class Renderer {
         }
         graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
         graphics.setColor(ChessPiece3D.WHITE);
-        graphics.drawString(Data.whiteTime, 10, 50);
+        graphics.drawString(Data.whiteTime, 50, 50);
         graphics.setColor(ChessPiece3D.BLACK);
-        graphics.drawString(Data.blackTime, 100, 50);
+        graphics.drawString(Data.blackTime, Global.display.getWidth()-135, 50);
     }
 
     private static List<Poly2D> getAllPolys2D() {
