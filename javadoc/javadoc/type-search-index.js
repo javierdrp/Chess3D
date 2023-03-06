@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"data","l":"Data"},{"p":"rendering.mesh","l":"Mesh3D"},{"p":"chess.piezas","l":"Pieza"},{"p":"chess.ui","l":"PromotionDialog"},{"p":"rendering.renderer","l":"Renderer"},{"p":"chess.ui","l":"Tile"}];updateSearchResults();
